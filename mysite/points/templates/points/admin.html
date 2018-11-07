@@ -1,0 +1,71 @@
+<h1>Name: {{ admin.adminname }}</h1>
+<a type="button" href="../">Logout</a>
+
+<form  action="/points/{{ admin.adminid }}/changemonth" method='post'>
+{% csrf_token %}
+    <label for = 'month'>Month:</label>
+    <input list="monthlist" name="month">
+    <datalist id="monthlist">
+        {% for m in ms %}
+            <option value = {{ m.MONTH }}>
+        {% endfor %}
+    </datalist>
+    <input type="submit" value="Change">
+</form>
+
+<h3>Report 1</h3>
+<table>
+  <tr>
+      <th>Employee Name</th>
+      <th> </th>
+      <th>Recived Points</th>
+      <th>Gived Points </th>
+      <th>Month: {{ selected_month }}</th>
+  </tr>
+    {% for e in month_use %}
+        <tr>
+            <th>{{ e.employeename }}</th>
+            <th> </th>
+            <th>{{ e.totalrecive }}</th>
+            <th>{{ e.totalgive }}</th>
+        </tr>
+    {% endfor %}
+</table><br>
+
+<h3>Report 2</h3>
+<table>
+  <tr>
+      <th>Employee Name</th>
+      <th> </th>
+      <th>Unused Points</th>
+      <th> </th>
+      <th>Month: {{ this_month }}</th>
+  </tr>
+    {% for e in view %}
+        <tr>
+            <th>{{ e.EMPLOYEENAME }}</th>
+            <th> </th>
+            <th>{{ e.UNUSED_POINT }}</th>
+        </tr>
+    {% endfor %}
+</table><br>
+
+<h3>Report 3</h3>
+<table>
+  <tr>
+      <th>Employee Name</th>
+      <th> </th>
+      <th>Redemption times</th>
+      <th>Month: {{ selected_month }}</th>
+  </tr>
+    {% for e in month_redemption %}
+        <tr>
+            <th>{{ e.EMPLOYEENAME }}</th>
+            <th> </th>
+            <th>{{ e.Times }}</th>
+            <th> </th>
+        </tr>
+    {% endfor %}
+</table>
+
+

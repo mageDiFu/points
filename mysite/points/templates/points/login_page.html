@@ -1,0 +1,10 @@
+<center>
+<h1>{{ employeename }} Login</h1>
+<form  action="/points/{{ employeeid }}/profile" method='post'>
+    {% csrf_token %}
+    <label for="password">password: </label>
+    <input type ='password' name ='password' id="password" required>
+    <input type="submit" value="Login">
+</form>
+    {% if error_message %}<p><strong ><font color="red">{{ error_message }}</font></strong></p>{% endif %}
+</center>

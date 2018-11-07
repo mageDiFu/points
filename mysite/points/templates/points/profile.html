@@ -1,0 +1,83 @@
+<h1>Name: {{ employee.employeename }}</h1>
+<a type="button" href="../">Logout</a>
+<br>
+<h2>Month: {{ month }} Poins to Give: {{ pointstogive }}</h2>
+<form  action="/points/{{ employee.employeeid }}/give" method='post'>
+{% csrf_token %}
+    <label for = 'names'>To:</label>
+    <input list="namelist" name="giveto">
+    <datalist id="namelist">
+        {% for name in namelist %}
+            <option value = {{ name.employeename }}>
+        {% endfor %}
+    </datalist>
+    <label for = 'points'>Points:</label>
+    <input type="number" name="points" min="0" max={{ pointstogive }}>
+    <input type="submit" value="Give">
+</form>
+<h2>Gives</h2>
+<table>
+  <tr>
+    <th>reciever id</th>
+    <th>givedate</th>
+    <th>amount</th>
+  </tr>
+    {% for give in givelist %}
+        <tr>
+            <th>{{ give.reciverid.pk }}</th>
+            <th>{{ give.givedate }}</th>
+            <th>{{ give.amount }}</th>
+        </tr>
+    {% endfor %}
+    <tr>
+        <th>Total</th>
+        <th></th>
+        <th>{{ givesum}}</th>
+    </tr>
+</table>
+
+<h2>Recives</h2>
+<table>
+  <tr>
+    <th>Giver id</th>
+    <th>recive date</th>
+    <th>amount</th>
+  </tr>
+    {% for recive in recivelist %}
+        <tr>
+            <th>{{ recive.giverid.pk }}</th>
+            <th>{{ recive.givedate }}</th>
+            <th>{{ recive.amount }}</th>
+        </tr>
+    {% endfor %}
+    <tr>
+        <th>Total</th>
+        <th></th>
+        <th>{{ recivesum}}</th>
+    </tr>
+</table>
+
+<h2>Unused Points</h2>
+{{ unusedpoints }}
+{% if unusedpoints > 10000 %}
+<form  action="/points/{{ employee.employeeid }}/use" method='post'>
+{% csrf_token %}
+    <input type="submit" value="Use">
+</form>
+{% endif %}
+
+{% if uselist %}
+<h2>Uses</h2>
+<table>
+  <tr>
+    <th>use date</th>
+    <th>amount</th>
+  </tr>
+    {% for use in uselist %}
+        <tr>
+            <th>{{ use.usedate}}</th>
+            <th>{{ use.useamount }}</th>
+        </tr>
+    {% endfor %}
+</table>
+{% endif %}

@@ -1,0 +1,18 @@
+<center>
+{% if adminlist %}
+    <h3>Admin:</h3>
+    {% for admin in adminlist %}
+        <li><a href="/points/{{ admin.adminid }}/admin_login_page">{{ admin.adminname }}</a></li>
+    {% endfor %}
+{% else %}
+    <p>No admin are available.</p>
+{% endif %}
+{% if employee_list %}
+    <h3>Employees:</h3>
+    {% for employee in employee_list %}
+        <li><a href="/points/{{ employee.employeeid}}/login_page">{{ employee.employeename }}</a></li>
+    {% endfor %}
+{% else %}
+    <p>No employees are available.</p>
+{% endif %}
+</center>
