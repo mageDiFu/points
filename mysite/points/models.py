@@ -7,7 +7,6 @@ class Employee(models.Model):
     password = models.CharField(max_length=40, blank=True, null=True)
     employeeid = models.CharField(primary_key=True, max_length=1)
     initialpoints = models.BigIntegerField()
-    CURRENTMONTH = models.BigIntegerField()
 
     class Meta:
         managed = False
