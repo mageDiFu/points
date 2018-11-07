@@ -12,6 +12,10 @@
     </datalist>
     <input type="submit" value="Change">
 </form>
+<form  action="/points/{{ admin.adminid }}/endmonth" method='post'>
+{% csrf_token %}
+    <input type="submit" value="End Month">
+</form>
 
 <h3>Report 1</h3>
 <table>

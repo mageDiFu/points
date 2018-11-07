@@ -35,10 +35,10 @@ def give(request,employeeid):
         reciver = Employee.objects.get(employeename=request.POST['giveto'])
         g = Give(giveid=newid,giverid=employee,reciverid=reciver,amount=request.POST['points'])
         g.save()
-    givelist = Give.objects.filter(giverid=employeeid)
+    givelist = Give.objects.filter(giverid=employeeid, amount__gt=0)
     recivelist = Give.objects.filter(reciverid=employeeid)
     uselist = Use.objects.filter(employeeid=employeeid)
-    givesum = Give.objects.filter(giverid=employeeid).aggregate(Sum('amount'))['amount__sum']
+    givesum = Give.objects.filter(giverid=employeeid, amount__gt=0).aggregate(Sum('amount'))['amount__sum']
     if givesum is None:
         givesum = 0
     recivesum = Give.objects.filter(reciverid=employeeid).aggregate(Sum('amount'))['amount__sum']
@@ -68,10 +68,10 @@ def profile(request,employeeid):
             'error_message': "Wrong Password",
         })
     else:
-        givelist = Give.objects.filter(giverid=employeeid)
+        givelist = Give.objects.filter(giverid=employeeid, amount__gt=0)
         recivelist = Give.objects.filter(reciverid=employeeid)
         uselist = Use.objects.filter(employeeid=employeeid)
-        givesum = Give.objects.filter(giverid=employeeid).aggregate(Sum('amount'))['amount__sum']
+        givesum = Give.objects.filter(giverid=employeeid, amount__gt=0).aggregate(Sum('amount'))['amount__sum']
         recivesum = Give.objects.filter(reciverid=employeeid).aggregate(Sum('amount'))['amount__sum']
         usesum = Use.objects.filter(employeeid=employeeid).aggregate(Sum('useamount'))['useamount__sum']
         unusedpoints = recivesum + employee.initialpoints
@@ -92,10 +92,10 @@ def use(request,employeeid):
     newid = str(employeeid)+str(count+1).zfill(3)
     u = Use(useid=newid, useamount=10000, employeeid=employee)
     u.save()
-    givelist = Give.objects.filter(giverid=employeeid)
+    givelist = Give.objects.filter(giverid=employeeid, amount__gt=0)
     recivelist = Give.objects.filter(reciverid=employeeid)
     uselist = Use.objects.filter(employeeid=employeeid)
-    givesum = Give.objects.filter(giverid=employeeid).aggregate(Sum('amount'))['amount__sum']
+    givesum = Give.objects.filter(giverid=employeeid, amount__gt=0).aggregate(Sum('amount'))['amount__sum']
     recivesum = Give.objects.filter(reciverid=employeeid).aggregate(Sum('amount'))['amount__sum']
     usesum = Use.objects.filter(employeeid=employeeid).aggregate(Sum('useamount'))['useamount__sum']
     unusedpoints = recivesum + employee.initialpoints - usesum
@@ -121,12 +121,18 @@ def admin(request, adminid):
             'error_message': "Wrong Password",
         })
     else:
+        employeelist = Employee.objects.all()
+        for e in employeelist:
+            count = Give.objects.filter(givedate=datetime.date.today()).aggregate(Count('giveid'))['giveid__count']
+            newid = str(datetime.date.today().strftime('%Y%m%d')) + str(count + 1).zfill(3)
+            try:
+                unusedpoint = RECENT_MONTH_UNUSED_POINTS.objects.get(EMPLOYEENAME=e.employeename)
+            except RECENT_MONTH_UNUSED_POINTS.DoesNotExist:
+                refund = Give(giveid=newid, giverid=e, reciverid=None, amount=0)
+                refund.save()
         view = RECENT_MONTH_UNUSED_POINTS.objects.all()
         month_redemption = MONTH_REDEMPTION.objects.filter(MONTH=datetime.date.today().month)
         month_use = MONTH_USEAGE.objects.filter(Q(recivemonth=datetime.date.today().month) | Q(givemonth=datetime.date.today().month))
-        #month_use = MONTH_USEAGE.objects.all()
-        for m in month_use:
-            print('r:',m.givemonth)
         ms = MONTH_REDEMPTION.objects.values('MONTH').distinct()
         context = {'view': view,'admin':admin,'month_redemption':month_redemption,'month_use':month_use,'ms':ms,'this_month':datetime.date.today().month,'selected_month':datetime.date.today().month}
         return render(request, 'points/admin.html', context)
@@ -139,4 +145,26 @@ def changemonth(request, adminid):
         Q(recivemonth=request.POST['month']) | Q(givemonth=request.POST['month']))
     ms = MONTH_REDEMPTION.objects.values('MONTH').distinct()
     context = {'view': view, 'admin': admin, 'month_redemption': month_redemption,'month_use':month_use, 'ms': ms,'this_month':datetime.date.today().month,'selected_month':request.POST['month']}
+    return render(request, 'points/admin.html', context)
+
+
+def endmonth(request, adminid):
+    admin = Admin.objects.get(adminid=adminid)
+    employeelist = Employee.objects.all()
+    for e in employeelist:
+        count = Give.objects.filter(givedate=datetime.date.today()).aggregate(Count('giveid'))['giveid__count']
+        newid = str(datetime.date.today().strftime('%Y%m%d')) + str(count + 1).zfill(3)
+        try:
+            unusedpoint = RECENT_MONTH_UNUSED_POINTS.objects.get(EMPLOYEENAME = e.employeename)
+        except RECENT_MONTH_UNUSED_POINTS.DoesNotExist:
+            unusedpoint = None
+        if unusedpoint.UNUSED_POINT<1000:
+            refund = Give(giveid=newid, giverid=e, reciverid=None, amount=unusedpoint.UNUSED_POINT-1000)
+            refund.save()
+    view = RECENT_MONTH_UNUSED_POINTS.objects.all()
+    month_redemption = MONTH_REDEMPTION.objects.filter(MONTH=datetime.date.today().month)
+    month_use = MONTH_USEAGE.objects.filter(
+        Q(recivemonth=datetime.date.today().month) | Q(givemonth=datetime.date.today().month))
+    ms = MONTH_REDEMPTION.objects.values('MONTH').distinct()
+    context = {'view': view, 'admin': admin, 'month_redemption': month_redemption,'month_use':month_use, 'ms': ms,'this_month':datetime.date.today().month,'selected_month':datetime.date.today().month}
     return render(request, 'points/admin.html', context)

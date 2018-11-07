@@ -10,5 +10,6 @@ urlpatterns = [
     path('<int:employeeid>/give', views.give, name='give'),
     path('<int:employeeid>/use', views.use, name='use'),
     path('<int:adminid>/admin', views.admin, name='admin'),
-    path('<int:adminid>/changemonth', views.changemonth, name='admin'),
+    path('<int:adminid>/changemonth', views.changemonth, name='changemonth'),
+    path('<int:adminid>/endmonth', views.endmonth, name='endmonth'),
 ]
