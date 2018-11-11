@@ -1,6 +1,6 @@
 <center>
 <h1>{{ adminname }} Login</h1>
-<form action="/points/{{ adminid }}/admin" method="post">
+<form action="/mysite/points/{{ adminid }}/admin" method="post">
     {% csrf_token %}
     <label for="password">password: </label>
     <input type = 'password' name = 'password' id="password" required>

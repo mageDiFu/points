@@ -1,7 +1,7 @@
 <h1>Name: {{ admin.adminname }}</h1>
 <a type="button" href="../">Logout</a>
 
-<form  action="/points/{{ admin.adminid }}/changemonth" method='post'>
+<form  action="/mysite/points/{{ admin.adminid }}/changemonth" method='post'>
 {% csrf_token %}
     <label for = 'month'>Month:</label>
     <input list="monthlist" name="month">
@@ -12,7 +12,7 @@
     </datalist>
     <input type="submit" value="Change">
 </form>
-<form  action="/points/{{ admin.adminid }}/endmonth" method='post'>
+<form  action="/mysite/points/{{ admin.adminid }}/endmonth" method='post'>
 {% csrf_token %}
     <input type="submit" value="End Month">
 </form>

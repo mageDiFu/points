@@ -2,7 +2,7 @@
 <a type="button" href="../">Logout</a>
 <br>
 <h2>Month: {{ month }} Poins to Give: {{ pointstogive }}</h2>
-<form  action="/points/{{ employee.employeeid }}/give" method='post'>
+<form  action="/mysite/points/{{ employee.employeeid }}/give" method='post'>
 {% csrf_token %}
     <label for = 'names'>To:</label>
     <input list="namelist" name="giveto">
@@ -60,7 +60,7 @@
 <h2>Unused Points</h2>
 {{ unusedpoints }}
 {% if unusedpoints > 10000 %}
-<form  action="/points/{{ employee.employeeid }}/use" method='post'>
+<form  action="/mysite/points/{{ employee.employeeid }}/use" method='post'>
 {% csrf_token %}
     <input type="submit" value="Use">
 </form>
